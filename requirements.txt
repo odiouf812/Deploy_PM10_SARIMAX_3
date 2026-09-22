@@ -1,0 +1,10 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+statsmodels>=0.14
+pmdarima>=2.0
+openpyxl>=3.1
+python-multipart>=0.0.9
+jinja2>=3.1
