@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard PM10 — SARIMAX &amp; Exposition</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-icon">🌫️</span>
+      <div>
+        <h1>Dashboard PM10</h1>
+        <p>Prévision SARIMAX · Simulation Monte Carlo · Classification d'exposition</p>
+      </div>
+    </div>
+    <button id="downloadBtn" class="btn btn-primary" disabled>⬇ Télécharger tous les résultats</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- STEP 1 : UPLOAD -->
+  <section class="card" id="uploadCard">
+    <div class="card-header">
+      <h2><span class="step-badge">1</span> Charger le fichier Excel</h2>
+    </div>
+    <div class="card-body">
+      <form id="uploadForm">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+          <div class="dropzone-content">
+            <span class="dropzone-icon">📄</span>
+            <p><strong>Cliquez pour choisir</strong> ou glissez-déposez votre fichier Excel</p>
+            <p class="muted">Colonnes attendues : Date, TC, HR, PM10</p>
+            <p class="filename" id="fileName"></p>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="sheetName">Nom de la feuille Excel</label>
+          <input type="text" id="sheetName" value="Donnees_Completes">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="analyzeBtn">
+          🚀 Lancer l'analyse complète
+        </button>
+      </form>
+      <div id="errorBox" class="error-box hidden"></div>
+      <div id="loadingBox" class="loading-box hidden">
+        <div class="spinner"></div>
+        <p id="loadingText">Analyse en cours — ajustement SARIMAX, simulation Monte Carlo (10 000 tirages)…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS (hidden until analysis done) -->
+  <div id="results" class="hidden">
+
+    <section class="card">
+      <div class="card-header">
+        <h2><span class="step-badge">2</span> Modèle SARIMAX</h2>
+      </div>
+      <div class="card-body">
+        <div class="summary-grid" id="modelSummary"></div>
+        <canvas id="historyChart" height="90"></canvas>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2><span class="step-badge">3</span> Prévisions PM10 (J+1, J+2)</h2>
+      </div>
+      <div class="card-body">
+        <canvas id="forecastChart" height="90"></canvas>
+        <div class="table-wrap">
+          <table class="data-table" id="forecastTable"></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2><span class="step-badge">4</span> Simulation Monte Carlo — Dose inhalée (10 000 tirages)</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row inline">
+          <label for="eventSelect">Épreuve</label>
+          <select id="eventSelect"></select>
+          <label for="daySelect">Jour</label>
+          <select id="daySelect"></select>
+        </div>
+        <canvas id="doseChart" height="90"></canvas>
+        <div class="dose-quantiles" id="doseQuantiles"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2><span class="step-badge">5</span> Classification de l'exposition</h2>
+      </div>
+      <div class="card-body">
+        <div class="legend">
+          <span class="legend-item"><span class="dot" style="background:#2e7d32"></span> Niveau 1 — Routine</span>
+          <span class="legend-item"><span class="dot" style="background:#f9a825"></span> Niveau 2 — Vigilance</span>
+          <span class="legend-item"><span class="dot" style="background:#c62828"></span> Niveau 3 — Précaution renforcée</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="classificationTable"></table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Dashboard généré à partir du pipeline SARIMAX PM10 — usage interne. Tous les fichiers de résultats (CSV, Excel) sont téléchargeables ci-dessus.</p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
